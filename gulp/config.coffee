@@ -12,5 +12,7 @@ config.script =
   entry : 'index'
   target : 'afinity'
   lint : true
+  browserify:
+    standalone: 'afinity'
 
 module.exports = config

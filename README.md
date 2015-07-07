@@ -14,9 +14,9 @@ ui = app.create
       button class:'plus', '+'
       button class:'minus', '-'
   events:
-    'click .plus':
+    'click .plus': ->
       @set 'counter', @get('counter')+1
-    'click .minus':
+    'click .minus': ->
       @set 'counter', @get('counter')-1
 
 app.body.append ui

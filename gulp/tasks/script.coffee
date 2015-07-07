@@ -54,11 +54,16 @@ compileScript = ( config, debug = false ) ->
 
   entry = config.src+'/'+config.entry+config.ext
 
-  return browserify
-      entries: entry
-      extensions: config.ext
-      debug: debug
-      paths: ['./node_modules',config.src]
+  opt =
+    entries: entry
+    extensions: config.ext
+    debug: debug
+    paths: [config.src]
+
+  if config.browserify?
+    opt[key] = value for key, value of config.browserify
+
+  return browserify opt
     .transform 'coffeeify'
     .bundle()
     .on 'error', ( e ) ->

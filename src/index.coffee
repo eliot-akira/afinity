@@ -48,7 +48,8 @@
     define [], -> afinity
   else if typeof exports is 'object'
     module.exports = afinity
-  else window.afinity = afinity
+  else
+    window.afinity = afinity
 
   return
 
