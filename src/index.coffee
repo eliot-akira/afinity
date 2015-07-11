@@ -1,9 +1,6 @@
 ###
 #
-# afinity - version 0.5.3
-#
-# Originally based on Agility.js by Artur B. Adib - http://agilityjs.com
-# Forked, pulled requests, modularized, extended, refactored and caffeinated
+# afinity - version 0.0.3
 #
 ###
 
