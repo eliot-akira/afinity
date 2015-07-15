@@ -101,7 +101,7 @@ Events
 
 ### View
 
-The HTML attribute `data-bind` is used to bind model to view, and vice versa if it's an input element.  That's it: there is no other templating logic.  Looping through collections, conditional states, must be handled by object methods, or in the context.
+The HTML attribute `data-bind` is used to bind model property to view, and vice versa if it's an input element. All other templating logic like looping through collections, conditional states, must be handled by object methods, or in the context.
 
 #### Template as string
 
@@ -111,7 +111,8 @@ Small templates may be given as a string.
 obj = app.create
   model:
     counter: 0
-  view: '<span data-bind="counter"></div>'
+  view:
+    '<span data-bind="counter"></div>'
   increment: (value) ->
     if not value then value = 1
     @set 'counter', @get('counter')+value
@@ -143,8 +144,9 @@ obj = app.create
         button type: 'submit'
     style: css
       '&':
-        border:'1px solid #ddd'
-        'input, button': width:'100%'
+        border: '1px solid #ddd'
+        'input, button':
+          width: '100%'
   events:
     'submit': ->
       data = @get()
