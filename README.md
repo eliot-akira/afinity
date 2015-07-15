@@ -74,7 +74,9 @@ obj = app.create
 app.body.append '#counter', obj
 ```
 
-There is also a separate module `afinity-tmpl` for creating encapsulated HTML and CSS within the object.
+The HTML attribute `data-bind` is used to bind model to view, and vice versa if it's an input element.
+
+There are two template helpers `html` and `css` to create encapsulate both template and style  within the object.
 
 ```coffeescript
 
@@ -92,7 +94,7 @@ obj = app.create
         'input': width:'100%'
 ```
 
-#### Document
+#### Template in document
 
 The template can be directly in the document.
 
@@ -110,7 +112,7 @@ obj = app.create view: '#contact-form'
 
 If it's a form, the inputs are automatically bound as model properties.
 
-#### Script tag
+#### Template in script tag
 
 ```html
 <script type="text/template" id="single-post">

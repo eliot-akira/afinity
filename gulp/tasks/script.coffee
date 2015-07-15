@@ -13,6 +13,61 @@ sourcemaps = require 'gulp-sourcemaps'
 rename = require 'gulp-rename'
 uglify = require 'gulp-uglify'
 
+compileScript = ( config, debug = false ) ->
+
+  entry = config.src+'/'+config.entry+config.ext
+
+  options =
+    entries: entry
+    extensions: config.ext
+    debug: debug
+    paths: [config.src]
+
+  if config.browserify?
+    options[key] = value for key, value of config.browserify
+
+  return browserify options
+    .transform 'coffeeify'
+    .bundle()
+    .on 'error', ( e ) ->
+      logger e.toString()
+      @emit 'end' # keep watch going
+    .pipe source config.target+'.js'
+    .pipe buffer()
+    .pipe gulp.dest config.dest
+
+combineScript = ( config, debug = false ) ->
+
+  bundledFileBase = config.dest+'/'+config.target
+
+  # TODO: Generate sourcemaps for lib and combine with bundle..?
+  # if config.jsLib
+  #   stream = gulp.src config.jsLib.concat("#{bundledFileBase}.js")
+  # else
+  stream = gulp.src bundledFileBase+'.js'
+
+  if debug
+    stream = stream
+      .pipe sourcemaps.init({ loadMaps: true }) # important
+      .pipe concat config.target+'.min.js'
+      .pipe sourcemaps.write()
+  else
+    # minify
+    stream = stream
+      .pipe concat config.target+'.min.js'
+      .pipe bytediff.start()
+      .pipe uglify()
+      .pipe bytediff.stop()
+
+  stream.pipe gulp.dest config.dest
+    .on 'end', ->
+      msg = "[ Script ] Built #{bundledFileBase}.min.js"
+      if debug then logger msg+' with sourcemaps'
+      else logger msg+' without sourcemaps'
+      # Remove intermediate file
+      file = config.dest+'/'+config.target
+      del [ file+'.js' ], -> # file+'.min.js',
+
 # if config.lint then preTasks.push 'script-lint'
 
 gulp.task 'script', ['script-compile','script-lib'], ->
@@ -39,7 +94,7 @@ gulp.task 'script-lint', ->
     .pipe coffeelint.reporter('fail')
 
 gulp.task 'script-lib', ->
-  if not jsLib? then return
+  if not config.jsLib then return
 
   gulp.src config.jsLib
     .pipe concat 'lib.min.js'
@@ -49,56 +104,3 @@ gulp.task 'script-lib', ->
     .pipe gulp.dest config.dest
     .on 'end', ->
       logger "[ Script ] Built lib.min.js"
-
-compileScript = ( config, debug = false ) ->
-
-  entry = config.src+'/'+config.entry+config.ext
-
-  opt =
-    entries: entry
-    extensions: config.ext
-    debug: debug
-    paths: [config.src]
-
-  if config.browserify?
-    opt[key] = value for key, value of config.browserify
-
-  return browserify opt
-    .transform 'coffeeify'
-    .bundle()
-    .on 'error', ( e ) ->
-      logger e.toString()
-      @emit 'end' # keep watch going
-    .pipe source config.target+'.js'
-    .pipe buffer()
-    .pipe gulp.dest config.dest
-
-combineScript = ( config, debug = false ) ->
-
-  bundledFileBase = "#{config.dest}/#{config.target}"
-
-  # Combine JS lib with compiled bundle
-  # stream = gulp.src config.jsLib.concat("#{bundledFileBase}.js")
-  stream = gulp.src "#{bundledFileBase}.js"
-
-  if debug
-    stream = stream
-      .pipe sourcemaps.init({ loadMaps: true }) # important
-      .pipe concat config.target+'.min.js'
-      .pipe sourcemaps.write()
-  else
-    # minify
-    stream = stream
-      .pipe concat config.target+'.min.js'
-      .pipe bytediff.start()
-      .pipe uglify()
-      .pipe bytediff.stop()
-
-  stream.pipe gulp.dest config.dest
-    .on 'end', ->
-      msg = "[ Script ] Built #{bundledFileBase}.min.js"
-      if debug then logger msg+' with sourcemaps'
-      else logger msg+' without sourcemaps'
-      # Remove intermediate file
-      file = config.dest+'/'+config.target
-      del [ file+'.js' ], -> # file+'.min.js',

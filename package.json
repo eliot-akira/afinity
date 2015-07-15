@@ -4,6 +4,8 @@
   "description": "Model/view/events object factory for modular user interface",
   "main": "dist/afinity.min.js",
   "scripts": {
+    "start": "gulp watch",
+    "build": "gulp",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Eliot Akira",

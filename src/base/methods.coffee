@@ -15,6 +15,10 @@ $ = require 'jquery'
 util = require '../util'
 # Event emitter factory
 eventify = require './eventify'
+# Templating
+css = require '../util/tmpl/css'
+html = require '../util/tmpl/html'
+escaped = require '../util/tmpl/escaped'
 
 module.exports = ( afinity ) ->
 
@@ -75,5 +79,10 @@ module.exports = ( afinity ) ->
   # Event manager factory
   afinity.eventify = eventify
   afinity.eventify afinity # Eventify yoself
+
+  # Templating
+  afinity.css = css
+  afinity.html = html
+  afinity.escaped = escaped
 
   return afinity
