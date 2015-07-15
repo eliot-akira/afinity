@@ -73,10 +73,14 @@ Each object:
 - can be used as a prototype to clone similar objects
 - can contain child objects to create nested structure, i.e. collections
 
+---
+
 ### Object Methods
 
 - on, trigger
 - append, destroy
+
+---
 
 ### Model
 
@@ -99,7 +103,7 @@ Events
 
 ---
 
-### View
+### View templates
 
 The HTML attribute `data-bind` is used to bind model property to view, and vice versa if it's an input element. All other templating logic like looping through collections, conditional states, must be handled by object methods, or in the context.
 
@@ -114,16 +118,14 @@ obj = app.create
   view:
     '<span data-bind="counter"></div>'
   increment: (value) ->
-    if not value then value = 1
-    @set 'counter', @get('counter')+value
+    @set 'counter', @get('counter')+(value or 1)
   decrement: (value) ->
-    if not value then value = 1
-    @set 'counter', @get('counter')-value
+    @set 'counter', @get('counter')-(value or 1)
 
 obj.increment(5).decrement(10)
 ```
 
-#### Template and style
+#### Template format and style
 
 There are two template helpers `html` and `css` to encapsulate both template and style within the object. This can be useful for building reusable components.
 
@@ -193,6 +195,12 @@ newPost = app.clone Post,
 
 app.body.append '.post-list', newPost
 ```
+
+---
+
+### View methods
+
+- $view
 
 ---
 

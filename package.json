@@ -10,7 +10,7 @@
   },
   "author": "Eliot Akira",
   "license": "MIT",
-  "repository": "github.com/eliot-akira/afinity",
+  "repository": "http://github.com/eliot-akira/afinity",
   "devDependencies": {
     "browserify": "^10.2.4",
     "browserify-shim": "^3.8.9",
