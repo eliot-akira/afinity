@@ -6,6 +6,22 @@ Model/view/events object factory for modular user interface
 
 ### Install
 
+#### Method 1
+
+Install as NPM module.
+
+```bash
+npm install afinity --save
+```
+
+And include via CommonJS/Browserify.
+
+```coffeescript
+app = require 'afinity'
+```
+
+#### Method 2
+
 The [minified library](https://github.com/eliot-akira/afinity/blob/master/dist/afinity.min.js) found in `dist` folder can be included after jQuery.
 
 ```html
@@ -18,25 +34,49 @@ Then it is exposed as `afinity` in the global scope.
 app = afinity
 ```
 
-It can also be installed as an NPM module.
-
-```bash
-npm install afinity --save
-```
-
-And included via CommonJS/Browserify.
-
-```coffeescript
-app = require 'afinity'
-```
-
 ---
 
 ### Note
 
-The library and examples are written in CoffeeScript for sweeter syntax, but it works well in plain JS also.
+The library and examples are written in CoffeeScript for sweeter syntax, but it works well in vanilla JS also. Just throw in a healthy dose of parentheses, curly brackets, semicolons..
 
 ---
+
+### Overview
+
+The main method is `create`, which takes three properties: model, view, and events.
+
+```coffeescript
+obj = app.create
+  model:
+    counter: 0
+  view:
+    '#counter-view'
+  events:
+    'click .add': ->
+      @set 'counter', @get()+1
+    'click .subtract': ->
+      @set 'counter', @get()-1
+
+obj.on 'change:counter', ->
+  console.log 'Counter changed to '+obj.get('counter')
+```
+
+- Model is the data or state of the object
+- View is the HTML representation, with optional data-binding to model
+- Events include user actions like click and submit, as well as internal events
+
+Each object:
+
+- is encapsulated
+- can publish/subscribe events to communicate with other objects
+- can be used as a prototype to clone similar objects
+- can contain child objects to create nested structure, i.e. collections
+
+### Object Methods
+
+- on, trigger
+- append, destroy
 
 ### Model
 
@@ -45,58 +85,75 @@ obj = app.create
   model :
     message : 'Hello'
 
-obj.on 'change:message', ->
-  console.log 'New message: ', obj.get 'message'
-
 obj.set 'message', 'Hey'
 ```
 
 Methods
 
 - get, set
-- on, trigger
+
+Events
+
+- change
+- change:property
 
 ---
 
 ### View
 
-#### String
+The HTML attribute `data-bind` is used to bind model to view, and vice versa if it's an input element.  That's it: there is no other templating logic.  Looping through collections, conditional states, must be handled by object methods, or in the context.
 
-For quick prototyping, define the view template as a string.
+#### Template as string
 
+Small templates may be given as a string.
 
 ```coffeescript
 obj = app.create
   model:
     counter: 0
   view: '<span data-bind="counter"></div>'
+  increment: (value) ->
+    if not value then value = 1
+    @set 'counter', @get('counter')+value
+  decrement: (value) ->
+    if not value then value = 1
+    @set 'counter', @get('counter')-value
 
-app.body.append '#counter', obj
+obj.increment(5).decrement(10)
 ```
 
-The HTML attribute `data-bind` is used to bind model to view, and vice versa if it's an input element.
+#### Template and style
 
-There are two template helpers `html` and `css` to create encapsulate both template and style  within the object.
+There are two template helpers `html` and `css` to encapsulate both template and style within the object. This can be useful for building reusable components.
 
 ```coffeescript
 
-{ div, input } = app.html
+{ form, input, button } = app.html
 css = app.css
 
 obj = app.create
+  model:
+    name: ''
+    email: ''
   view:
     format:
-      div class: 'name-input', ->
+      form ->
         input bind: 'name'
+        input bind: 'email'
+        button type: 'submit'
     style: css
       '&':
         border:'1px solid #ddd'
-        'input': width:'100%'
+        'input, button': width:'100%'
+  events:
+    'submit': ->
+      data = @get()
+      # Do something with data
 ```
 
 #### Template in document
 
-The template can be directly in the document.
+The template can be already in the document.
 
 ```html
 <form id="contact-form">
